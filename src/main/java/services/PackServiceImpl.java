@@ -5,6 +5,7 @@ import dto.PackResponseDTO;
 import entities.Offre;
 import entities.Pack;
 import mappers.PackMapper;
+import repositories.OffreRepository;
 import repositories.PackRepository;
 
 import java.util.List;
@@ -15,10 +16,12 @@ public class PackServiceImpl implements PackService{
 
     private PackRepository packRepository;
     private PackMapper packMapper;
+    private OffreRepository offreRepository;
 
-    public PackServiceImpl(PackRepository packRepository, PackMapper packMapper) {
+    public PackServiceImpl(PackRepository packRepository, PackMapper packMapper, OffreRepository offreRepository) {
         this.packRepository = packRepository;
         this.packMapper = packMapper;
+        this.offreRepository = offreRepository;
     }
 
     @Override
@@ -38,6 +41,8 @@ public class PackServiceImpl implements PackService{
         Pack pack = packMapper.packRequestDTOTOPack(packRequestDTO);
         pack.setId(UUID.randomUUID().toString());
         try {
+            Offre offre = offreRepository.findById(packRequestDTO.getOffreId()).get();
+            pack.setOffre(offre);
             return packMapper.packToPackResponseDTO(packRepository.save(pack));
         }catch (Exception exception){
             System.out.println(exception.getMessage());
@@ -48,7 +53,9 @@ public class PackServiceImpl implements PackService{
     @Override
     public PackResponseDTO update(PackRequestDTO packRequestDTO) {
         Pack pack = packMapper.packRequestDTOTOPack(packRequestDTO);
-        try {
+        try{
+            Offre offre = offreRepository.findById(packRequestDTO.getOffreId()).get();
+            pack.setOffre(offre);
             return packMapper.packToPackResponseDTO(packRepository.save(pack));
         }catch (Exception exception){
             System.out.println(exception.getMessage());

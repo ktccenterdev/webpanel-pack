@@ -1,5 +1,6 @@
 package com.pack.service.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,10 +23,11 @@ public class Pack extends AbstractDefaultValues implements Serializable {
     private String description;
 
     @ManyToOne
-    @JoinColumn(name = "offre_id")
+    @JsonIgnore
     private Offre offre;
 
     @OneToMany(mappedBy = "pack")
+    @JsonIgnore
     private Collection<PackDetails> packDetails;
 
 }

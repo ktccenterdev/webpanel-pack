@@ -71,8 +71,7 @@ public class PackServiceImpl implements PackService{
     @Override
     public void delete(String id) {
         try {
-            Pack pack = packRepository.findById(id).get();
-            packRepository.delete(pack);
+            packRepository.deleteById(id);
         } catch (Exception exception) {
             System.out.println(exception.getMessage());
         }

@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.List;
 
 @Data @NoArgsConstructor @AllArgsConstructor
 public class OffreResponseDTO extends AbstractDefaultValuesResponseDTO implements Serializable {

@@ -19,7 +19,7 @@ public class PackDetails extends AbstractDefaultValues implements Serializable {
     @ManyToOne
     private Pack pack;
 
-    @ManyToMany
+    @ManyToOne
     private Details details;
 
 

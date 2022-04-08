@@ -64,8 +64,7 @@ public class OffreServiceImpl implements  OffreService{
     @Override
     public void delete(String id) {
         try {
-            Offre offre = offreRepository.findById(id).get();
-            offreRepository.delete(offre);
+            offreRepository.deleteById(id);
         } catch (Exception exception) {
             System.out.println(exception.getMessage());
         }

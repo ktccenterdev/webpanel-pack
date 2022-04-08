@@ -70,8 +70,7 @@ public class DetailsServiceImpl implements DetailsService{
     @Override
     public void delete(String id) {
         try {
-            Details details = detailsRepository.findById(id).get();
-            detailsRepository.delete(details);
+            detailsRepository.deleteById(id);
         } catch (Exception exception) {
             System.out.println(exception.getMessage());
         }

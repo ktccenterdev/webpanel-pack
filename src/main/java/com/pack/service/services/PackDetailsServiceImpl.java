@@ -81,6 +81,6 @@ public class PackDetailsServiceImpl implements PackDetailsService{
 
     @Override
     public void delete(String id) {
-
+        packDetailsRepository.deleteById(id);
     }
 }

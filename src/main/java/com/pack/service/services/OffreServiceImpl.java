@@ -3,6 +3,7 @@ package com.pack.service.services;
 import com.pack.service.entities.Offre;
 import com.pack.service.dto.OffreRequestDTO;
 import com.pack.service.dto.OffreResponseDTO;
+import com.pack.service.exceptions.SuppressionException;
 import com.pack.service.mappers.OffreMapper;
 import org.springframework.stereotype.Service;
 import com.pack.service.repositories.OffreRepository;
@@ -26,38 +27,44 @@ public class OffreServiceImpl implements  OffreService{
 
     @Override
     public OffreResponseDTO getOne(String id) {
-        Offre offre = offreRepository.findById(id).get();
-        return offreMapper.offreToOffreResponseDTO(offre);
+        try {
+            Offre offre = offreRepository.findById(id).get();
+            return offreMapper.offreToOffreResponseDTO(offre);
+        } catch (Exception e) {
+            throw new RuntimeException(e.getLocalizedMessage());
+        }
     }
 
     @Override
     public List<OffreResponseDTO> getAll() {
-        List<Offre> offres = offreRepository.findAll();
-        return offres.stream()
-                .map(offre -> offreMapper.offreToOffreResponseDTO(offre))
-                .collect(Collectors.toList());
+        try {
+            List<Offre> offres = offreRepository.findAll();
+            return offres.stream()
+                    .map(offre -> offreMapper.offreToOffreResponseDTO(offre))
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            throw new RuntimeException(e.getLocalizedMessage());
+        }
     }
 
     @Override
     public OffreResponseDTO save(OffreRequestDTO offreRequestDTO) {
-        Offre offre = offreMapper.offreRequestDTOTOOffre(offreRequestDTO);
-        offre.setId(UUID.randomUUID().toString());
         try {
+            Offre offre = offreMapper.offreRequestDTOTOOffre(offreRequestDTO);
+            offre.setId(UUID.randomUUID().toString());
             return offreMapper.offreToOffreResponseDTO(offreRepository.save(offre));
         } catch (Exception exception) {
-            System.out.println(exception.getMessage());
-            return null;
+            throw new RuntimeException(exception.getLocalizedMessage());
         }
     }
 
     @Override
     public OffreResponseDTO update(OffreRequestDTO offreRequestDTO) {
-        Offre offre = offreMapper.offreRequestDTOTOOffre(offreRequestDTO);
         try {
+            Offre offre = offreMapper.offreRequestDTOTOOffre(offreRequestDTO);
             return offreMapper.offreToOffreResponseDTO(offreRepository.save(offre));
         } catch (Exception exception) {
-            System.out.println(exception.getMessage());
-            return null;
+            throw new RuntimeException(exception.getLocalizedMessage());
         }
     }
 
@@ -66,7 +73,7 @@ public class OffreServiceImpl implements  OffreService{
         try {
             offreRepository.deleteById(id);
         } catch (Exception exception) {
-            System.out.println(exception.getMessage());
+            throw new RuntimeException(exception.getLocalizedMessage());
         }
     }
 }

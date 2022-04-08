@@ -4,6 +4,7 @@ import com.pack.service.dto.DetailsRequestDTO;
 import com.pack.service.entities.Details;
 import com.pack.service.entities.Offre;
 import com.pack.service.dto.DetailsResponseDTO;
+import com.pack.service.exceptions.SuppressionException;
 import com.pack.service.mappers.DetailsMapper;
 import org.springframework.stereotype.Service;
 import com.pack.service.repositories.DetailsRepository;
@@ -30,27 +31,35 @@ public class DetailsServiceImpl implements DetailsService{
 
     @Override
     public DetailsResponseDTO getOne(String id) {
-        return detailsMapper.detailsToDetailsResponseDTO(detailsRepository.findById(id).get());
+        try{
+            return detailsMapper.detailsToDetailsResponseDTO(detailsRepository.findById(id).get());
+        }catch(Exception exception){
+            throw new RuntimeException(exception.getLocalizedMessage());
+        }
     }
 
     @Override
     public List<DetailsResponseDTO> getAll() {
-        return detailsRepository.findAll().stream()
-                .map(details -> detailsMapper.detailsToDetailsResponseDTO(details))
-                .collect(Collectors.toList());
+        try{
+            return detailsRepository.findAll().stream()
+                    .map(details -> detailsMapper.detailsToDetailsResponseDTO(details))
+                    .collect(Collectors.toList());
+        }catch (Exception exception){
+            throw new RuntimeException(exception.getLocalizedMessage());
+        }
+
     }
 
     @Override
     public DetailsResponseDTO save(DetailsRequestDTO detailsRequestDTO) {
-        Details details = detailsMapper.detailsRequestDTOTODetails(detailsRequestDTO);
-        details.setId(UUID.randomUUID().toString());
         try {
+            Details details = detailsMapper.detailsRequestDTOTODetails(detailsRequestDTO);
+            details.setId(UUID.randomUUID().toString());
             Offre offre = offreRepository.findById(detailsRequestDTO.getOffreId()).get();
             details.setOffre(offre);
             return detailsMapper.detailsToDetailsResponseDTO(detailsRepository.save(details));
         }catch (Exception exception){
-            System.out.println(exception.getMessage());
-            return null;
+            throw new RuntimeException(exception.getLocalizedMessage());
         }
     }
 
@@ -62,8 +71,7 @@ public class DetailsServiceImpl implements DetailsService{
             details.setOffre(offre);
             return detailsMapper.detailsToDetailsResponseDTO(detailsRepository.save(details));
         }catch (Exception exception){
-            System.out.println(exception.getMessage());
-            return null;
+            throw new RuntimeException(exception.getLocalizedMessage());
         }
     }
 
@@ -72,7 +80,7 @@ public class DetailsServiceImpl implements DetailsService{
         try {
             detailsRepository.deleteById(id);
         } catch (Exception exception) {
-            System.out.println(exception.getMessage());
+            throw new RuntimeException(exception.getLocalizedMessage());
         }
     }
 }

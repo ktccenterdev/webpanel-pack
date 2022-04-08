@@ -4,6 +4,7 @@ import com.pack.service.entities.Offre;
 import com.pack.service.entities.Pack;
 import com.pack.service.dto.PackRequestDTO;
 import com.pack.service.dto.PackResponseDTO;
+import com.pack.service.exceptions.SuppressionException;
 import com.pack.service.mappers.PackMapper;
 import org.springframework.stereotype.Service;
 import com.pack.service.repositories.OffreRepository;
@@ -31,14 +32,22 @@ public class PackServiceImpl implements PackService{
 
     @Override
     public PackResponseDTO getOne(String id) {
-        return packMapper.packToPackResponseDTO(packRepository.findById(id).get());
+        try {
+            return packMapper.packToPackResponseDTO(packRepository.findById(id).get());
+        } catch (Exception e) {
+            throw new RuntimeException(e.getLocalizedMessage());
+        }
     }
 
     @Override
     public List<PackResponseDTO> getAll() {
-        return packRepository.findAll().stream()
-                .map(pack -> packMapper.packToPackResponseDTO(pack))
-                .collect(Collectors.toList());
+        try {
+            return packRepository.findAll().stream()
+                    .map(pack -> packMapper.packToPackResponseDTO(pack))
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            throw new RuntimeException(e.getLocalizedMessage());
+        }
     }
 
     @Override
@@ -50,8 +59,7 @@ public class PackServiceImpl implements PackService{
             pack.setOffre(offre);
             return packMapper.packToPackResponseDTO(packRepository.save(pack));
         }catch (Exception exception){
-            System.out.println(exception.getMessage());
-            return null;
+            throw new RuntimeException(exception.getMessage());
         }
     }
 
@@ -63,8 +71,7 @@ public class PackServiceImpl implements PackService{
             pack.setOffre(offre);
             return packMapper.packToPackResponseDTO(packRepository.save(pack));
         }catch (Exception exception){
-            System.out.println(exception.getMessage());
-            return null;
+            throw new RuntimeException(exception.getMessage());
         }
     }
 
@@ -72,8 +79,8 @@ public class PackServiceImpl implements PackService{
     public void delete(String id) {
         try {
             packRepository.deleteById(id);
-        } catch (Exception exception) {
-            System.out.println(exception.getMessage());
+        } catch (Exception e) {
+            throw new RuntimeException(e.getLocalizedMessage());
         }
     }
 }

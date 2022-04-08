@@ -5,6 +5,7 @@ import com.pack.service.entities.Pack;
 import com.pack.service.dto.PackDetailsRequestDTO;
 import com.pack.service.dto.PackDetailsResponseDTO;
 import com.pack.service.entities.PackDetails;
+import com.pack.service.exceptions.SuppressionException;
 import com.pack.service.mappers.PackDetailsMapper;
 import org.springframework.stereotype.Service;
 import com.pack.service.repositories.DetailsRepository;
@@ -36,14 +37,22 @@ public class PackDetailsServiceImpl implements PackDetailsService{
 
     @Override
     public PackDetailsResponseDTO getOne(String id) {
-        return packDetailsMapper.packDetailsToPackDetailsResponseDTO(packDetailsRepository.findById(id).get());
+        try {
+            return packDetailsMapper.packDetailsToPackDetailsResponseDTO(packDetailsRepository.findById(id).get());
+        } catch (Exception e) {
+            throw new RuntimeException(e.getLocalizedMessage());
+        }
     }
 
     @Override
     public List<PackDetailsResponseDTO> getAll() {
-        return packDetailsRepository.findAll().stream()
-                .map(packDetails -> packDetailsMapper.packDetailsToPackDetailsResponseDTO(packDetails))
-                .collect(Collectors.toList());
+        try {
+            return packDetailsRepository.findAll().stream()
+                    .map(packDetails -> packDetailsMapper.packDetailsToPackDetailsResponseDTO(packDetails))
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            throw new RuntimeException(e.getLocalizedMessage());
+        }
     }
 
     @Override
@@ -58,8 +67,7 @@ public class PackDetailsServiceImpl implements PackDetailsService{
             packDetails.setPack(pack);
             return packDetailsMapper.packDetailsToPackDetailsResponseDTO(packDetailsRepository.save(packDetails));
         }catch (Exception e){
-            System.out.println(e.getMessage());
-            return null;
+            throw new RuntimeException(e.getLocalizedMessage());
         }
     }
 
@@ -73,14 +81,17 @@ public class PackDetailsServiceImpl implements PackDetailsService{
             packDetails.setDetails(details);
             packDetails.setPack(pack);
             return packDetailsMapper.packDetailsToPackDetailsResponseDTO(packDetailsRepository.save(packDetails));
-        }catch (Exception e){
-            System.out.println(e.getMessage());
-            return null;
+        }catch (Exception exception){
+            throw new RuntimeException(exception.getMessage());
         }
     }
 
     @Override
     public void delete(String id) {
-        packDetailsRepository.deleteById(id);
+        try {
+            packDetailsRepository.deleteById(id);
+        } catch (Exception e) {
+            throw new RuntimeException(e.getLocalizedMessage());
+        }
     }
 }

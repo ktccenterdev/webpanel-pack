@@ -5,6 +5,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,11 +19,12 @@ public class Offre extends AbstractDefaultValues implements Serializable {
 
     @Id
     private String id;
+
     @Column(nullable = false, unique = true)
-
+    @NotEmpty(message = "Intitulé ne peut être vide")
     private String intitule;
-    @Column(nullable = true)
 
+    @Column(nullable = true)
     private String description;
 
     @OneToMany(mappedBy = "offre")

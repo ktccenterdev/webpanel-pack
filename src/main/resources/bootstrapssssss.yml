@@ -1,8 +1,0 @@
-spring:
-  application:
-    name: webpanel-pack
-  cloud:
-    config:
-      discovery:
-        enabled: true
-        serviceId: CONFIGSERVER

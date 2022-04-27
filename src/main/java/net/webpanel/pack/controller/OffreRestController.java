@@ -11,6 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(path="/api")
+@CrossOrigin(origins = "*")
 public class OffreRestController implements IRestController<OffreRequestDTO, OffreResponseDTO> {
     private OffreService offreService;
 

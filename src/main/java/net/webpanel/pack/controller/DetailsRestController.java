@@ -9,6 +9,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(path="/api")
+@CrossOrigin(origins = "*")
 public class DetailsRestController implements IRestController<DetailsRequestDTO, DetailsResponseDTO> {
 
     private DetailsService detailsService;

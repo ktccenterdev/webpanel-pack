@@ -9,12 +9,14 @@
 		<version>2.6.6</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>net.webpanel</groupId>
+	<groupId>net.ktc</groupId>
 	<artifactId>pack</artifactId>
 	<version>1.0</version>
 	<name>webpanel-pack</name>
 	<description>Application de gestion des packs</description>
 	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
 		<spring-cloud.version>2021.0.1</spring-cloud.version>
 		<mapstruct-version>1.4.2.Final</mapstruct-version>

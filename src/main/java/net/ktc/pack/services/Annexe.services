@@ -1,0 +1,163 @@
+package church.control.ccdivision.services;
+
+import church.control.ccdivision.dto.AnnexeRequestDTO;
+import church.control.ccdivision.dto.AnnexeResponseDTO;
+import church.control.ccdivision.entities.Annexe;
+import church.control.ccdivision.mappers.AnnexeMapper;
+import church.control.ccdivision.repositories.AnnexeRepository;
+import church.control.ccdivision.repositories.ParoisseRepository;
+import org.springframework.stereotype.Service;
+import org.webjars.NotFoundException;
+
+import javax.management.openmbean.KeyAlreadyExistsException;
+import javax.transaction.Transactional;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+@Service
+@Transactional
+public class AnnexeServiceImpl implements AnnexeService{
+    private AnnexeRepository annexeRepository;
+    private ParoisseRepository paroisseRepository;
+    private AnnexeMapper annexeMapper;
+
+    public AnnexeServiceImpl(AnnexeRepository annexeRepository, AnnexeMapper annexeMapper,
+                             ParoisseRepository paroisseRepository) {
+        this.annexeRepository = annexeRepository;
+        this.paroisseRepository = paroisseRepository;
+        this.annexeMapper = annexeMapper;
+    }
+
+    @Override
+    public AnnexeResponseDTO getOne(String id) {
+        try{
+            return annexeMapper.entityToResponseDTO(annexeRepository.findById(id).get());
+        }catch (Exception e){
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    @Override
+    public List<AnnexeResponseDTO> getAll() {
+        try{
+            return annexeRepository.findAll().stream()
+                    .map(annexe -> annexeMapper.entityToResponseDTO(annexe))
+                    .collect(Collectors.toList());
+
+        }catch (Exception e){
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    @Override
+    public List<AnnexeResponseDTO> findAllByIsActived(Boolean isactived) {
+        try{
+            return annexeRepository.findByisActived(isactived).stream()
+                    .map(annexe -> annexeMapper.entityToResponseDTO(annexe))
+                    .collect(Collectors.toList());
+
+        }catch (Exception e){
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    @Override
+    public List<AnnexeResponseDTO> findByIntituleOrEmail(String intitule, String email) {
+        try{
+            return annexeRepository.findByIntituleOrEmail(intitule, email).stream()
+                    .map(annexe -> annexeMapper.entityToResponseDTO(annexe))
+                    .collect(Collectors.toList());
+
+        }catch (Exception e){
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    @Override
+    public AnnexeResponseDTO findByIntitule(String intitule) {
+        try{
+            return annexeMapper.entityToResponseDTO(annexeRepository.findByIntitule(intitule));
+        }catch (Exception e){
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    @Override
+    public AnnexeResponseDTO findByEmail(String email) {
+        try{
+            return  annexeMapper.entityToResponseDTO(annexeRepository.findByEmail(email));
+        }catch (Exception e){
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    @Override
+    public AnnexeResponseDTO save(AnnexeRequestDTO annexeRequestDTO) {
+        try{
+            Annexe annexe = this.annexeMapper.requestDTOToEntity(annexeRequestDTO);
+            //check intitule
+            if(annexeRepository.findByIntitule(annexeRequestDTO.getIntitule()) != null) {
+                throw new KeyAlreadyExistsException("Cet intitulé existe déja.");
+            }
+            //check adresse email
+            if(annexeRepository.findByEmail(annexeRequestDTO.getEmail()) != null){
+                throw new KeyAlreadyExistsException("Cet adresse email est déja utilisé.");
+            }
+            if(paroisseRepository.existsById(annexeRequestDTO.getParoisseID())){
+                annexe.setParoisseMere(paroisseRepository.getById(annexeRequestDTO.getParoisseID()));
+                annexe.setId(UUID.randomUUID().toString());
+                return  this.annexeMapper.entityToResponseDTO(annexeRepository.save(annexe));
+            }else{
+                throw new NotFoundException("Cette paroisse n'existe pas.");
+            }
+        }catch (Exception e){
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    @Override
+    public AnnexeResponseDTO update(AnnexeRequestDTO annexeRequestDTO) {
+        Annexe existAnnexe;
+        try{
+            Annexe annexe = annexeMapper.requestDTOToEntity(annexeRequestDTO);
+
+            if(!annexeRepository.existsById(annexe.getId())){
+                throw new NotFoundException("Cet annexe n'existe pas, veuillez d'abord l'enrégistrer");
+            }
+            //check intitule
+            existAnnexe = annexeRepository.findByIntitule(annexe.getIntitule());
+            if( null != existAnnexe && annexe.getId() != existAnnexe.getId()){
+                throw new KeyAlreadyExistsException("Cet intitulé existe déja.");
+            }
+            //check email
+            existAnnexe = annexeRepository.findByEmail(annexe.getEmail());
+            if( null != existAnnexe && annexe.getId() != existAnnexe.getId()){
+                throw new KeyAlreadyExistsException("Cet adresse email est déja utilisé.");
+            }
+
+            if(paroisseRepository.existsById(annexeRequestDTO.getParoisseID())){
+                annexe.setParoisseMere(paroisseRepository.findById(annexeRequestDTO.getParoisseID()).get());
+                return  annexeMapper.entityToResponseDTO(annexeRepository.save(annexe));
+            }else{
+                throw new NotFoundException("Cette paroisse n'existe pas.");
+            }
+        }catch (Exception e){
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    @Override
+    public void delete(String id) {
+        try{
+            if(annexeRepository.existsById(id)){
+                Annexe annexe = annexeRepository.getById(id);
+                annexe.setIsActived(false);
+            }else{
+                throw new NotFoundException("Cet annexe n'existe pas");
+            }
+        }catch(Exception e){
+            throw  new RuntimeException(e.getMessage());
+        }
+    }
+}

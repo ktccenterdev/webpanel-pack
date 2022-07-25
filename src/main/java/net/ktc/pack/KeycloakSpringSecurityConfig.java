@@ -26,9 +26,9 @@ public class KeycloakSpringSecurityConfig extends KeycloakWebSecurityConfigurerA
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         super.configure(http);
-        http.authorizeRequests().antMatchers("/api/packs/**").hasAuthority("app-manager");
+        /*http.authorizeRequests().antMatchers("/api/packs/**").hasAuthority("app-manager");
         http.authorizeRequests().antMatchers("/api/offres/**").hasAuthority("app-manager");
         http.authorizeRequests().antMatchers("/api/details/**").hasAuthority("app-manager");
-        http.authorizeRequests().antMatchers("/api/packsdetails/**").hasAuthority("app-manager");
+        http.authorizeRequests().antMatchers("/api/packsdetails/**").hasAuthority("app-manager");*/
     }
 }
